@@ -53,7 +53,8 @@ static const GaugeDef kGauges[] = {
       0.0f, 15.0f, 200.0f, -20.0f, &kMainNeedle}},
     {"BATTERY VOLTS", "V",
      {gauge_volts_bg, GAUGE_VOLTS_BG_WIDTH, GAUGE_VOLTS_BG_HEIGHT,
-      15.0f, 25.0f, 200.0f, -20.0f, &kMainNeedle}},
+      15.0f, 25.0f, 200.0f, -20.0f, &kMainNeedle,
+      20.0f, RGB565(255, 40, 40), 60}},
 };
 static const int kGaugeCount = sizeof(kGauges) / sizeof(kGauges[0]);
 

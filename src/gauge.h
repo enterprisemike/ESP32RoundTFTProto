@@ -23,6 +23,10 @@ struct GaugeConfig {
   float minAngleDeg;   // needle angle at minValue (math convention: 0 = east, CCW+)
   float maxAngleDeg;   // needle angle at maxValue
   const NeedleSprite *needle;
+  // Optional low-value warning: tint the face while value < lowThreshold.
+  float lowThreshold;
+  uint16_t lowTintColor;
+  uint8_t lowTintAlpha; // blend strength, 0 = disabled
 };
 
 class Gauge {
@@ -34,4 +38,5 @@ public:
 
 private:
   GaugeConfig _cfg;
+  mutable uint16_t *_lowBg = nullptr; // lazily built tinted background (PSRAM)
 };

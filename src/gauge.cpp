@@ -63,11 +63,30 @@ static void blitNeedle(Arduino_Canvas *canvas, const NeedleSprite &spr,
 }
 
 void Gauge::draw(Arduino_Canvas *canvas, float value) const {
+  // Pick the normal or low-warning background.
+  const uint16_t *bg = _cfg.background;
+  if (_cfg.lowTintAlpha != 0 && value < _cfg.lowThreshold) {
+    if (_lowBg == nullptr) {
+      const size_t n = (size_t)_cfg.bgWidth * _cfg.bgHeight;
+      _lowBg = (uint16_t *)ps_malloc(n * sizeof(uint16_t));
+      if (_lowBg != nullptr) {
+        for (size_t i = 0; i < n; i++) {
+          const uint16_t p = _cfg.background[i];
+          // Leave the pure-black surround untouched.
+          _lowBg[i] = (p == 0) ? 0 : blend565(_cfg.lowTintColor, p, _cfg.lowTintAlpha);
+        }
+      }
+    }
+    if (_lowBg != nullptr) {
+      bg = _lowBg;
+    }
+  }
+
   // Centre the background on the round panel.
   const int16_t bgX = (LCD_WIDTH - _cfg.bgWidth) / 2;
   const int16_t bgY = (LCD_HEIGHT - _cfg.bgHeight) / 2;
   canvas->fillScreen(RGB565_BLACK);
-  canvas->draw16bitRGBBitmap(bgX, bgY, const_cast<uint16_t *>(_cfg.background),
+  canvas->draw16bitRGBBitmap(bgX, bgY, const_cast<uint16_t *>(bg),
                              _cfg.bgWidth, _cfg.bgHeight);
 
   // Map value to needle angle.
