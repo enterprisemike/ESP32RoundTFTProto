@@ -19,6 +19,13 @@
 #define PIN_TOUCH_RST 40
 #define PIN_TOUCH_INT 39
 
+// EC11 rotary encoder (board V1.3; external 10K pullups + RC debounce)
+// Nets from ESP32-S3-Demo-Schematic-V1.3: CHA=pin36(GPIO48), CHB=pin27(GPIO21),
+// PUSH=pin51(GPIO45). On V1.2 boards PUSH is GPIO46.
+#define PIN_ENC_A 48
+#define PIN_ENC_B 21
+#define PIN_ENC_PUSH 45
+
 // Panel geometry
 #define LCD_WIDTH 466
 #define LCD_HEIGHT 466

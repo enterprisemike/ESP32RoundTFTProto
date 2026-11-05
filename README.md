@@ -22,7 +22,8 @@ The adapter board carries all signals; pins are fixed by the kit
 | LCD SCK | 9 | | Touch SCL | 42 |
 | LCD D0–D3 | 10–13 | | Touch RST | 40 |
 | LCD RST | 15 | | Touch INT | 39 |
-| LCD TE | 16 | | | |
+| LCD TE | 16 | | Encoder A / B | 48 / 21 |
+| | | | Encoder push | 45 (V1.3; 46 on V1.2) |
 
 ## Software stack
 
@@ -58,8 +59,11 @@ The adapter board carries all signals; pins are fixed by the kit
    If upload fails to start, hold **BOOT**, tap **RST**, release **BOOT**,
    and retry.
 
-On boot the board shows the traction-current gauge with a simulated,
-easing needle, and logs the simulation targets over serial.
+On boot the board shows the traction-current gauge with a simulated, easing
+needle, and logs the simulation targets over serial. **Rotate the encoder** to
+switch between the traction current, speed, and battery volts gauges (wraps in
+both directions); each keeps its own simulation state. The encoder push button
+is wired up but currently unassigned.
 
 ## Project layout
 
@@ -69,7 +73,8 @@ easing needle, and logs the simulation targets over serial.
 │   ├── pins.h                # kit pin map
 │   └── assets/               # generated RGB565 image headers
 ├── src/
-│   ├── main.cpp              # display bring-up + simulation loop
+│   ├── main.cpp              # gauge definitions, encoder selection, simulation
+│   ├── encoder.{h,cpp}       # interrupt-driven EC11 quadrature decoder
 │   └── gauge.{h,cpp}         # reusable gauge renderer (bg + rotated needle sprite)
 ├── assets/                   # source PNG gauge faces & needle sprites
 └── tools/
