@@ -14,6 +14,7 @@
 #include "encoder.h"
 #include "gauge.h"
 #include "pins.h"
+#include "touch.h"
 
 static Arduino_DataBus *bus = new Arduino_ESP32QSPI(
     PIN_LCD_CS, PIN_LCD_SCK, PIN_LCD_D0, PIN_LCD_D1, PIN_LCD_D2, PIN_LCD_D3);
@@ -93,6 +94,12 @@ void setup() {
   encoder::begin(PIN_ENC_A, PIN_ENC_B, PIN_ENC_PUSH);
   Serial.println("Encoder ready — rotate to switch gauges");
 
+  if (touch::begin(PIN_TOUCH_SDA, PIN_TOUCH_SCL, PIN_TOUCH_RST)) {
+    Serial.println("Touch ready (CST820) — swipe left/right to switch gauges");
+  } else {
+    Serial.println("WARNING: CST820 touch not responding");
+  }
+
   for (int i = 0; i < kGaugeCount; i++) {
     const GaugeConfig &c = kGauges[i].config;
     sims[i] = {c.minValue, randomInRange(c.minValue, c.maxValue), 0};
@@ -103,8 +110,8 @@ void setup() {
 void loop() {
   const uint32_t now = millis();
 
-  // Encoder: rotate to switch gauges (wraps around).
-  const int steps = encoder::readSteps();
+  // Encoder rotation or touch swipe switches gauges (wraps around).
+  const int steps = encoder::readSteps() + touch::readSwipe();
   if (steps != 0) {
     selected = ((selected + steps) % kGaugeCount + kGaugeCount) % kGaugeCount;
     Serial.printf("Gauge: %s\n", kGauges[selected].name);
